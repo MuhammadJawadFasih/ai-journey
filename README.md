@@ -34,8 +34,7 @@ step is documentation, not new analysis.
 [flyrank-ml-internship](https://github.com/MuhammadJawadFasih/flyrank-ml-internship)
 repo) — once it's finished, turn it into `case-studies/01-capstone-refresh-model.md`.
 
-**Reminder:** ⬜ Check back on this by **[fill in target date — pick the
-date you expect the capstone due/finished]**. If unchecked past that
+**Reminder:** ⬜ Check back on this by **September 10, 2026**. If unchecked past that
 date, that's the nudge to either finish the capstone or set a new date.
 
 > Update this checkbox manually, or better: add a recurring weekly
@@ -46,5 +45,4 @@ date, that's the nudge to either finish the capstone or set a new date.
 
 This repo is built and maintained with help from a Claude Project that
 already has my voice, stack, and identity kit loaded — so adding the
-next case is a short conversation, not a rebuild. Project name: `[fill
-in your Claude Project name here]`.
+next case is a short conversation, not a rebuild. Project name: `FlyRank ML Internship`.
