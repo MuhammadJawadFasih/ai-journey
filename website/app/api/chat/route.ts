@@ -27,16 +27,7 @@ than making things up. For general questions unrelated to Jawad, just answer nor
 helpfully like any capable assistant.
 `;
 
-export async function POST(req: NextRequest) {
-  const { message, history } = await req.json();
-
-  const apiKey = process.env.GEMINI_API_KEY;
-
-  const contents = [
-    ...(history || []),
-    { role: "user", parts: [{ text: message }] },
-  ];
-
+async function callGemini(contents: any, apiKey: string | undefined) {
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`,
     {
@@ -54,13 +45,69 @@ export async function POST(req: NextRequest) {
   const data = await response.json();
 
   if (!response.ok) {
-    return NextResponse.json(
-      { error: data.error?.message || "Something went wrong" },
-      { status: response.status }
-    );
+    const err: any = new Error(data.error?.message || "Something went wrong");
+    err.status = response.status;
+    throw err;
   }
 
-  const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response.";
+  return data;
+}
 
-  return NextResponse.json({ reply });
+async function callGeminiWithRetry(contents: any, apiKey: string | undefined, maxRetries = 3) {
+  let lastError: any;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await callGemini(contents, apiKey);
+    } catch (error: any) {
+      lastError = error;
+
+      const isRateLimit =
+        error?.status === 429 ||
+        (error?.message && error.message.includes("429")) ||
+        (error?.message && error.message.toLowerCase().includes("resource exhausted")) ||
+        (error?.message && error.message.toLowerCase().includes("quota"));
+
+      if (!isRateLimit) {
+        throw error;
+      }
+
+      let delaySeconds = Math.pow(2, attempt) * 2;
+      const match = error?.message ? error.message.match(/retry in ([\d.]+)s/i) : null;
+      if (match) {
+        delaySeconds = parseFloat(match[1]) + 0.5;
+      }
+
+      if (attempt < maxRetries) {
+        await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
+      }
+    }
+  }
+
+  const friendlyError: any = new Error(
+    "I'm getting a lot of requests right now — please try again in a moment!"
+  );
+  friendlyError.isFriendly = true;
+  friendlyError.status = 429;
+  throw friendlyError;
+}
+
+export async function POST(req: NextRequest) {
+  const { message, history } = await req.json();
+
+  const apiKey = process.env.GEMINI_API_KEY;
+
+  const contents = [
+    ...(history || []),
+    { role: "user", parts: [{ text: message }] },
+  ];
+
+  try {
+    const data = await callGeminiWithRetry(contents, apiKey);
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response.";
+    return NextResponse.json({ reply });
+  } catch (error: any) {
+    const message = error.isFriendly ? error.message : (error.message || "Something went wrong");
+    return NextResponse.json({ error: message }, { status: error.status || 500 });
+  }
 }
