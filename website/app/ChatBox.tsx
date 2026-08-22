@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 type Message = { role: "user" | "model"; parts: { text: string }[] };
 
@@ -56,7 +57,41 @@ export default function ChatBox() {
             >
               {m.role === "user" ? "you >" : "agent >"}
             </span>
-            <span className="text-[#EDEAE2]">{m.parts[0].text}</span>
+            {m.role === "user" ? (
+              <span className="text-[#EDEAE2]">{m.parts[0].text}</span>
+            ) : (
+              <span className="text-[#EDEAE2] prose-chat inline">
+                <ReactMarkdown
+                  components={{
+                    p: ({ children }) => <span>{children} </span>,
+                    strong: ({ children }) => (
+                      <strong className="text-[#E8A33D] font-semibold">{children}</strong>
+                    ),
+                    h1: ({ children }) => (
+                      <div className="block font-semibold text-base mt-2 mb-1">{children}</div>
+                    ),
+                    h2: ({ children }) => (
+                      <div className="block font-semibold text-base mt-2 mb-1">{children}</div>
+                    ),
+                    h3: ({ children }) => (
+                      <div className="block font-semibold text-sm mt-2 mb-1">{children}</div>
+                    ),
+                    ul: ({ children }) => (
+                      <ul className="list-disc list-inside my-1 space-y-0.5">{children}</ul>
+                    ),
+                    li: ({ children }) => <li>{children}</li>,
+                    hr: () => <hr className="border-[#2A3040] my-2" />,
+                    code: ({ children }) => (
+                      <code className="bg-[#0F1420] px-1 py-0.5 rounded text-xs font-[family-name:var(--font-mono)]">
+                        {children}
+                      </code>
+                    ),
+                  }}
+                >
+                  {m.parts[0].text}
+                </ReactMarkdown>
+              </span>
+            )}
           </div>
         ))}
         {loading && (
