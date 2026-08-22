@@ -40,35 +40,45 @@ export default function ChatBox() {
   }
 
   return (
-    <div className="border border-gray-800 rounded-lg p-4 flex flex-col gap-3 max-w-2xl w-full">
-      <div className="flex flex-col gap-2 max-h-80 overflow-y-auto">
+    <div className="bg-[#171D2B] border border-[#2A3040] rounded-md p-5 flex flex-col gap-4">
+      <div className="flex flex-col gap-3 max-h-72 overflow-y-auto pr-1">
         {messages.length === 0 && (
-          <p className="text-gray-500 text-sm">Ask my agent something...</p>
+          <p className="font-[family-name:var(--font-mono)] text-xs text-[#8890A0]">
+            $ waiting for input...
+          </p>
         )}
         {messages.map((m, i) => (
-          <div
-            key={i}
-            className={`text-sm ${m.role === "user" ? "text-blue-400" : "text-gray-200"}`}
-          >
-            <span className="font-semibold">{m.role === "user" ? "You: " : "Agent: "}</span>
-            {m.parts[0].text}
+          <div key={i} className="text-sm leading-relaxed">
+            <span
+              className={`font-[family-name:var(--font-mono)] text-xs mr-2 ${
+                m.role === "user" ? "text-[#E8A33D]" : "text-[#8890A0]"
+              }`}
+            >
+              {m.role === "user" ? "you >" : "agent >"}
+            </span>
+            <span className="text-[#EDEAE2]">{m.parts[0].text}</span>
           </div>
         ))}
-        {loading && <p className="text-gray-500 text-sm">Agent is thinking...</p>}
+        {loading && (
+          <p className="font-[family-name:var(--font-mono)] text-xs text-[#8890A0]">
+            agent &gt; thinking
+            <span className="animate-blink">...</span>
+          </p>
+        )}
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 pt-1 border-t border-[#2A3040]">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           placeholder="Type a message..."
-          className="flex-1 bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-gray-100 outline-none"
+          className="flex-1 bg-transparent pt-3 text-sm text-[#EDEAE2] placeholder-[#5C6373] outline-none font-[family-name:var(--font-mono)]"
         />
         <button
           onClick={sendMessage}
           disabled={loading}
-          className="bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 py-2 rounded disabled:opacity-50"
+          className="mt-3 mb-0.5 bg-[#E8A33D] hover:bg-[#F0B558] text-[#0F1420] text-xs font-semibold uppercase tracking-wide px-4 py-2 rounded disabled:opacity-40 transition-colors h-fit"
         >
           Send
         </button>
