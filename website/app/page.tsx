@@ -1,3 +1,5 @@
+import ChatBox from "./ChatBox";
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-gray-950 text-gray-100 flex flex-col items-center px-6 py-20">
@@ -34,12 +36,18 @@ export default function Home() {
               </p>
             </div>
             <div className="border border-gray-800 rounded-lg p-4 hover:border-gray-600 transition">
-              <h3 className="font-medium text-gray-100">Personal AI Agent (coming soon)</h3>
+              <h3 className="font-medium text-gray-100">Personal AI Agent</h3>
               <p className="text-sm text-gray-400 mt-1">
-                A working agent built on the Claude API — details soon.
+                A working agent powered by Gemini — try it live below.
               </p>
             </div>
           </div>
+        </section>
+
+        {/* Live Agent */}
+        <section>
+          <h2 className="text-xl font-semibold mb-4 text-gray-200">Talk to my agent</h2>
+          <ChatBox />
         </section>
 
         {/* Links */}
